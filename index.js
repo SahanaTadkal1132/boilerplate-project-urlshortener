@@ -25,6 +25,7 @@ app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
 
+<<<<<<< HEAD
 
 
 const dns = require('dns');
@@ -45,10 +46,20 @@ let counter = 1;
 app.post('/api/shorturl', (req, res) => {
   const originalUrl = req.body.url;
 
+=======
+let urlDatabase = {};
+let counter = 1;
+
+app.post("/api/shorturl", (req, res) => {
+  const originalUrl = req.body.url;
+
+  // Validate URL
+>>>>>>> 8f27a4a1e62c9f854beb4b3e7ed776550ecf3f29
   try {
     const urlObj = new URL(originalUrl);
     dns.lookup(urlObj.hostname, (err) => {
       if (err) {
+<<<<<<< HEAD
         return res.json({ error: 'invalid url' });
       }
 
@@ -76,3 +87,31 @@ app.get('/api/shorturl/:short', (req, res) => {
 });
 
 
+=======
+        return res.json({ error: "invalid url" });
+      } else {
+        const shortUrl = counter++;
+        urlDatabase[shortUrl] = originalUrl;
+
+        return res.json({
+          original_url: originalUrl,
+          short_url: shortUrl
+        });
+      }
+    });
+  } catch (err) {
+    return res.json({ error: "invalid url" });
+  }
+});
+
+app.get("/api/shorturl/:short_url", (req, res) => {
+  const shortUrl = req.params.short_url;
+  const originalUrl = urlDatabase[shortUrl];
+
+  if (originalUrl) {
+    return res.redirect(originalUrl);
+  } else {
+    return res.status(404).json({ error: "No short URL found for given input" });
+  }
+});
+>>>>>>> 8f27a4a1e62c9f854beb4b3e7ed776550ecf3f29
